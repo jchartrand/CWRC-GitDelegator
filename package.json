@@ -7,7 +7,7 @@
     "commit": "git-cz",
     "check-coverage": "istanbul check-coverage --statements 0 --branches 0 --functions 0 --lines 0",
     "report-coverage": "cat ./coverage/lcov.info | codecov",
-    "test": "mocha spec -w",
+    "test": "",
     "test:single": "istanbul cover -x *.test.js _mocha -- -R spec spec",
     "semantic-release": "semantic-release pre && npm publish && semantic-release post"
   },
