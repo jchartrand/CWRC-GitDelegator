@@ -1,8 +1,8 @@
 'use strict';
-var $ = require('jquery');
-var Octokit = require('octokit');
+global.jQuery = global.$ = require('jquery');
+let Octokit = require('octokit');
 let Cookies = require('js-cookie');
-let bootstrap = require('bootstrap');
+require('bootstrap');
 let cwrcGit = require('cwrc-git-server-client');
 
 /**
