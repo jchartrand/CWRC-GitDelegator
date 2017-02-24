@@ -1,5 +1,5 @@
 'use strict';
-global.jQuery = global.$ = require('jquery');
+let $ = require('jquery');
 let Octokit = require('octokit');
 let Cookies = require('js-cookie');
 require('bootstrap');
