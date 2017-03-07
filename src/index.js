@@ -542,7 +542,7 @@ function Delegator(writer) {
           var isPrivate = $('#save-git-doc-private').checked;
           createRepoForCurrentDoc(repoName, repoDesc, isPrivate).then(
             success=>{
-                    alert(success);
+                    //alert(success);
                     $('#githubSaveModal').modal('hide');
                 },
             failure=>$('#save-cwrc-message').text("Couldn't save.").show());
@@ -577,7 +577,7 @@ function Delegator(writer) {
                 failure=>{
                     console.log("save failed, and the return value is: ");
                     console.log(failure);
-                    alert(failure);
+                    //alert(failure);
                 }
             );
         });
