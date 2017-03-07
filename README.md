@@ -45,6 +45,153 @@ The spec directory contains specifications (tests) that can help better understa
 The methods exposed (API) by this package are:
 
 ```
+
+/**
+     * Gets the URI for the entity
+     * @param {Object} entity The entity object
+     * @returns {Promise} The promise object
+     */
+getUriForEntity(entity)
+    
+    /**
+     * Gets the URI for the annotation
+     * @param {Object} entity The entity object
+     * @returns {Promise} The promise object
+     */
+getUriForAnnotation()
+    
+    /**
+     * Gets the URI for the document
+     * @param {Object} entity The entity object
+     * @returns {Promise} The promise object
+     */
+    del.getUriForDocument()
+
+    /**
+     * Gets the URI for the target
+     * @param {Object} entity The entity object
+     * @returns {Promise} The promise object
+     */
+    getUriForTarget()
+    
+    /**
+     * Gets the URI for the selector
+     * @param {Object} entity The entity object
+     * @returns {Promise} The promise object
+     */
+    getUriForSelector()
+    
+    /**
+     * Gets the URI for the user
+     * @param {Object} entity The entity object
+     * @returns {Promise} The promise object
+     */
+    getUriForUser()
+    
+    /**
+     * Validate the current document against the current schema.  Publishes a documentValidated event
+     * that includes three args: valid (true/false),  data (validation info from validator), docText 
+     * @fires Writer#validationInitiated
+     * @fires Writer#documentValidated
+     * @param {Delegator~validateCallback} callback 
+     #
+     * @callback Delegator~validateCallback
+     * @param {Boolean} isValid is the document valid
+     * 
+     */
+    validate(callback)
+    
+    /**
+     * Get a specific documentation file
+     * @param {String} fileName The documentation file name.
+     * @param {Delegator~getDocumentationCallback} callback
+     *
+     * @callback Delegator~getTemplatesCallback
+     * @param {Document} The XML doc
+     */
+    getDocumentation(fileName, callback)
+    
+
+    
+    /**
+     * Gets the list of templates
+     * @param {Delegator~getTemplatesCallback} callback
+     *
+     * @callback Delegator~getTemplatesCallback
+     * @param {Array} templates The list of templates
+     * @property {String} name The template name
+     * @property {String} path The path to the template, relative to the parent branch
+     * 
+     */
+    getTemplates(callback)
+
+    
+    /**
+     * Gets the list of documents
+     * @param {Delegator~getDocumentsCallback} callback
+     *
+     * @callback Delegator~getDocumentsCallback
+     * @param {Array} documents The list of documents
+     * @property {String} name The document name
+     * 
+     */
+    getDocuments(callback)
+     
+    
+    
+    /**
+     * Loads a template
+     * @param {String} path The path to the template, relative to the templates repo
+     * @param {Delegator~loadTemplateCallback} callback
+     *
+     * @callback Delegator~loadTemplateCallback
+     * @param {Document} The template document
+     */
+    loadTemplate(path, callback)
+     
+    
+    /**
+     * Loads a document
+     * @param {String} docId The document ID
+     * @param {Delegator~loadDocumentCallback} callback
+     *
+     * @callback Delegator~loadDocumentCallback
+     * @param {(Document|null)} document Returns the document or null if there was an error
+     */
+    loadDocument(docId, callback)
+     
+    
+    /**
+     * Performs the server call to save the document.
+     * @fires Writer#documentSaved
+     * @param {String} docId The document ID
+     * @param {Delegator~saveDocumentCallback} callback
+     *
+     * @callback Delegator~saveDocumentCallback
+     * @param {Boolean} savedSuccessfully
+     */
+    saveDocument = function(docId, callback)
+    
+    /**
+     * Standard save and exit.
+     */
+    saveAndExit(callback) 
+    
+    /**
+     * returns help text for given tagname.
+     @param {String} tagName The tag for which to provide help
+     */
+    getHelp(tagName)
+
+    /**
+     * Spawns a popup prompting the user to save the current document to a github repository.
+     */
+    save()
+
+    /**
+     * Spawns a popup prompting the user to load a document from one of their GitHub repositories.
+     */
+    load()
 	
 
 ```
