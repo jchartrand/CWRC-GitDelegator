@@ -18,7 +18,7 @@
 
 ### Overview
 
-Function to which [CWRC-GitWriter](https://github.com/jchartrand/CWRC-GitWriter) delegates server-side calls.
+Makes calls to server from web browser on behalf of [CWRC-GitWriter](https://github.com/jchartrand/CWRC-GitWriter).
 
 ### Demo 
 

@@ -474,8 +474,11 @@ function Delegator(writer) {
                             <button type="button" class="close" data-dismiss="modal" aria-hidden="true" style="float:right"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></button>
                             <h4 id="gh-modal-title' class="modal-title" style="text-align:center">Save</h4>
                         </div>
-                        <div style="margin-top:1em">
-                            <div id="save-cwrc-message" class="text-warning" style="margin-top:1em">some text</div>
+   
+                        <div style="well" style="margin-top:1em;text-align:center">
+                            <h5 id="save-cwrc-message">
+                                This document is associated with the ${w.repoOwner}/${w.repoName} GitHub repository.  You may save to it, or save to a new repository.
+                            </h5>
                         </div>
 
                         <form id="github-save-new-form" class="well collapse" style="margin-top:1em">
@@ -544,6 +547,7 @@ function Delegator(writer) {
             success=>{
                     //alert(success);
                     $('#githubSaveModal').modal('hide');
+                    $('#save-cwrc-message').text(`This document is associated with the ${w.repoOwner}/${w.repoName} GitHub repository.  You may save to it, or save to a new repository.`);
                 },
             failure=>$('#save-cwrc-message').text("Couldn't save.").show());
         });
@@ -569,6 +573,10 @@ function Delegator(writer) {
         
         $('#githubSaveModal').modal();
         
+        if (!w.repoName) {
+            $('#save-doc-btn').hide();
+            $('#save-cwrc-message').text("This document isn't yet associated with a GitHub repository.");
+        } 
         $('#save-doc-btn').click(function(event){
             saveDoc().then(
                 success=>{
