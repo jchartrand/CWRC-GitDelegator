@@ -14,11 +14,12 @@
 1. [Demo](#demo)
 1. [Installation](#installation)
 1. [Use](#use)
+1. [Development](#development)
 1. [API](#api)
 
 ### Overview
 
-Makes calls to server from web browser on behalf of [CWRC-GitWriter](https://github.com/jchartrand/CWRC-GitWriter).
+Handles interaction with the server on behalf of [CWRC-GitWriter](https://github.com/jchartrand/CWRC-GitWriter), including spawning dialogs for file listing, loading, and saving.
 
 ### Demo 
 
@@ -195,3 +196,23 @@ getUriForAnnotation()
 	
 
 ```
+
+### Development
+
+An index.html and test/test.js are provided along with a browserify/watchify script in the package.json to allow working with the dialogs in a local browser.  Browserify bundles up the test.js script and puts the result in build/test.js which the index.html file loads.  
+
+The gitServer has to be running at http://localhost/delegatortest, and the index.html
+also has to be served from http://localhost/delegatortest.
+    
+One way to do that is to start the gitserver at localhost:3000 using `npm run start` and 
+add the following to the local apache config:
+
+```
+    ProxyPass /delegatortest/github http://localhost:3000/github
+    ProxyPassReverse /delegatortest/github http://localhost:3000/github
+```
+
+and then symlink the test directory from this project into the apache home directory,for example:
+
+`sudo ln -s /Users/jc/cwrc/github/CWRC-GitDelegator delegatortest`
+
