@@ -111,7 +111,7 @@ function Delegator(writer) {
         
         $.ajax({
           //  url: w.baseUrl+'services/validator/validate.html',
-            url: 'http://validator.services.cwrc.ca/validator/validate.html'
+            url: 'http://validator.services.cwrc.ca/validator/validate.html',
             type: 'POST',
             dataType: 'xml',
             data: {
