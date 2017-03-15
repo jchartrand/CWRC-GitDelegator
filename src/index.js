@@ -476,10 +476,11 @@ function Delegator(writer) {
     function getTemplate(templateName) {
         cwrcGit.getTemplate(templateName)
             .done(function( result ) {
+                console.log("got the result")
                 console.log(result);
-                var xmlDoc = $.parseXML(result.responseText);
-                w.fileManager.loadDocumentFromXml(xmlDoc);
-                console.log(w);
+               // var xmlDoc = $.parseXML(result);
+                w.fileManager.loadDocumentFromXml(result);
+                //console.log(w);
             }).fail(function(errorMessage) {
                 console.log("in the getTemplate fail");
                 console.log(errorMessage);

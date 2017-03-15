@@ -31,7 +31,7 @@
   "homepage": "https://github.com/jchartrand/CWRC-GitDelegator#readme",
   "dependencies": {
     "bootstrap": "3.3.7",
-    "cwrc-git-server-client": "1.1.0",
+    "cwrc-git-server-client": "1.1.1",
     "cwrcgit": "1.1.0",
     "github": "8.1.1",
     "jquery": "3.1.0",
