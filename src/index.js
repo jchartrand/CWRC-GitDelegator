@@ -432,11 +432,57 @@ function Delegator(writer) {
     function showReposForGitHubUser(gitName) {   
         cwrcGit.getReposForGithubUser(gitName)
             .done(function( repos ) {
-                //console.log(repos);
                 populateRepoList(repos, '#github-public-doc-list')
             }).fail(function(errorMessage) {
-                console.log("in the fail");
                 $('#cwrc-message').text(`Couldn't find anything for that id.  Please try again.`).show();
+            });
+    }
+
+    function showTemplates() {   
+        cwrcGit.getTemplates()
+            .done(function( templates ) {
+                console.log(templates);
+                populateTemplateList(templates, '#template-list')
+            }).fail(function(errorMessage) {
+                $('#cwrc-message').text(`Couldn't find the templates. Please check your connection or try again.`).show();
+            });
+    }
+
+    function populateTemplateList(templates, listGroupId) {
+        $(function () { 
+            var listContainer = $(listGroupId);
+            listContainer.empty()
+
+            for (let template of templates) {
+                listContainer.prepend(`
+                    <a id="gh_${template.name}" href="#" data-template="${template.name}" class="list-group-item git-repo">
+                        <h4 class="list-group-item-heading">${template.name}</h4>
+                    </a>`);
+            }
+
+            $('#cwrc-message').hide();
+            
+            $(`${listGroupId} .list-group-item`).on('click', function() {
+                var $this = $(this);
+                var $templateName = $this.data('template');
+                getTemplate($templateName);
+                
+                $('#githubLoadModal').modal('hide');
+            });
+            
+        });
+    }
+
+    function getTemplate(templateName) {
+        cwrcGit.getTemplate(templateName)
+            .done(function( result ) {
+                console.log(result);
+                var xmlDoc = $.parseXML(result);
+                w.fileManager.loadDocumentFromXml(xmlDoc);
+                console.log(w);
+            }).fail(function(errorMessage) {
+                console.log("in the getDoc fail");
+                console.log(errorMessage);
             });
     }
 
@@ -625,6 +671,9 @@ function Delegator(writer) {
                             <a class="nav-link" data-toggle="tab" href="#public" role="tab">Public Github Documents</a>
                           </li>
                           <li class="nav-item">
+                            <a class="nav-link" data-toggle="tab" href="#templates" role="tab">Templates</a>
+                          </li>
+                          <li class="nav-item">
                             <a class="nav-link" data-toggle="tab" href="#search" role="tab">Search Github</a>
                           </li>
                         </ul>
@@ -709,6 +758,12 @@ function Delegator(writer) {
                                 <div id="github-public-doc-list" class="list-group"></div>
                             </div><!-- /tab-pane -->
 
+                            <!-- TEMPLATES PANE -->
+                            <div class="tab-pane" id="templates" role="tabpanel">
+                                <div id="template-list" class="list-group"></div>
+                            </div><!-- /tab-pane -->
+
+
                             <!-- SEARCH PANE -->
 
                             <div class="tab-pane" id="search" role="tabpanel">...</div><!-- /tab-pane -->
@@ -744,12 +799,13 @@ function Delegator(writer) {
         if (Cookies.get('cwrc-token')) {
             getInfoForAuthenticatedUser();
             showReposForAuthenticatedGithubUser();
+            showTemplates();
             $('#open-new-doc-btn').show();
             $('#cwrc-message').hide();
             $('#private-tab').tab('show')
             $('#githubLoadModal').modal();
         } else {
-            dialog('You no longer seem to be logged into github, please try reloading the CWRC-Writer.')
+            del.authenticate();
             // 
             // BUT REALLY, SHOULDN'T GET HERE WITHOUT HAVING LOGGED IN.
         }   
