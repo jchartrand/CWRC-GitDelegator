@@ -7,6 +7,7 @@ let Cookies = require('js-cookie');
 require('bootstrap');
 let cwrcGit = require('cwrc-git-server-client');
 
+let cwrcAppName = "CWRC-GitWriter" + "-web-app";
 /**
  * @class Delegator
  * @param {Writer} writer
@@ -276,7 +277,7 @@ function Delegator(writer) {
 /*
     function showReposForAuthenticatedGithubUser() {
        // cwrcGit.getReposForAuthenticatedGithubUser()
-            .done(function( results let queryString = 'CWRC-GitWriter-web-app';
+            .done(function( results let queryString = cwrcAppName;
           //  if (publicTopicTerms) queryString += "+" + publicTopicTerms;
             if (publicSearchTerms) queryString += "+" + publicSearchTerms;
             queryString += "+user:" + writer.githubUser;
@@ -293,11 +294,8 @@ function Delegator(writer) {
 
     function showRepos(gitName, listContainerId, searchTerms) {   
 
-        console.log('gitname in showRepos line 321');
-        console.log(gitName);
-
        // if (publicSearchTerms || publicTopicTerms) {
-            let queryString = 'CWRC-GitWriter-web-app';
+            let queryString = cwrcAppName;
           //  if (publicTopicTerms) queryString += "+" + publicTopicTerms;
             if (searchTerms) queryString += "+" + searchTerms;
             if (gitName) queryString += "+user:" + gitName;
@@ -406,7 +404,7 @@ function Delegator(writer) {
                         <h4 class="list-group-item-heading">${result.repository.full_name}</h4>
                         <p class="list-group-item-text">${result.repository.description}</p>`;
                 for (let textMatch of result.text_matches) {
-                    if (! textMatch.fragment.includes('CWRC-GitWriter-web-app')) {
+                    if (! textMatch.fragment.includes(cwrcAppName)) {
                         htmlForResultRow += `<p>${textMatch.fragment}</p>`
                     }
                 }
@@ -690,7 +688,7 @@ function Delegator(writer) {
                                     </form>
 
                                
-                                <div id="github-public-doc-list" class="list-group"></div>
+                                <div id="github-public-doc-list" class="list-group" style="padding-top:1em"></div>
                             </div><!-- /tab-pane -->
 
                             <!-- TEMPLATES PANE -->
