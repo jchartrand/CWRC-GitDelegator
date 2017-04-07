@@ -10,6 +10,7 @@ let cwrcGit = require('cwrc-git-server-client');
 /**
  * @class Delegator
  * @param {Writer} writer
+ * @
  */
 function Delegator(writer) {
     var w = writer;
@@ -178,150 +179,31 @@ function Delegator(writer) {
      */
     
     function _getTemplateBranch() {
-        var octo = Octokit.new({token: '15286e8222a7bc13504996e8b451d82be1cba397'});
-        var templateRepo = octo.getRepo('cwrc', 'CWRC-Writer-Templates');
-        // if we're on development then also get the templates development branch
-        var forceDev = true;
-        var isDev = window.location.pathname.indexOf('/dev/') !== -1;
-        if (forceDev || isDev) {
-            return templateRepo.getBranch('development');
-        } else {
-            return templateRepo.getBranch('master');
-        }
-    }
-    
-    /**
-     * Gets the list of templates
-     * @param {Delegator~getTemplatesCallback} callback
-     */
-    del.getTemplates = function(callback) {
-        var branch = _getTemplateBranch();
-        branch.contents('templates').then(function(contents) {
-            contents = $.parseJSON(contents);
-            var templates = [];
-            for (var i = 0; i < contents.length; i++) {
-                var c = contents[i];
-                var path = c.path;
-                var name = c.name;
-                name = name.replace(/_/g, ' ').replace('.xml', '');
-                name = w.utilities.getCamelCase(name);
-                templates.push({name: name, path: path});
-            }
-            callback.call(w, templates);
-        });
-    };
-    
-    /**
-     * @callback Delegator~getTemplatesCallback
-     * @param {Array} templates The list of templates
-     * @property {String} name The template name
-     * @property {String} path The path to the template, relative to the parent branch
-     * 
-     */
-    
-    
-    /**
-     * Gets the list of documents
-     * @param {Delegator~getDocumentsCallback} callback
-     */
-    del.getDocuments = function(callback) {
-        // don't use this with git delegator
-        /*$.ajax({
-            url: w.baseUrl+'editor/documents',
-            type: 'GET',
-            dataType: 'json',
-            success: function(docNames, status, xhr) {
-                if (callback) {
-                    callback.call(w, docNames);
-                }
-            },
-            error: function() {
-                if (callback) {
-                    callback.call(w, []);
-                }
-            }
-        });*/
-    };
-    
-    /**
-     * @callback Delegator~getDocumentsCallback
-     * @param {Array} documents The list of documents
-     * @property {String} name The document name
-     * 
-     */
-    
-    
-    /**
-     * Loads a template
-     * @param {String} path The path to the template, relative to the templates repo
-     * @param {Delegator~loadTemplateCallback} callback
-     */
-    del.loadTemplate = function(path, callback) {
-        var branch = _getTemplateBranch();
-        branch.contents(path).then(function(template) {
-            path = path.replace('.xml', '');
-            window.location.hash = '#'+path;
-            // byte order mark fix
-            if (template.charCodeAt(0) == 65279) {
-                template = template.substr(1);
-            }
-            var xml = $.parseXML(template);
-            callback.call(w, xml);
-        });
-    };
-    
-    /**
-     * @callback Delegator~loadTemplateCallback
-     * @param {Document} The template document
-     */
-    
-    /**
-     * Loads a document
-     * @param {String} docId The document ID
-     * @param {Delegator~loadDocumentCallback} callback
-     */
-    del.loadDocument = function(docId, callback) {
         // don't use this with gitDelegator
-       /* $.ajax({
-            url: w.baseUrl+'editor/documents/'+docId,
-            type: 'GET',
-            success: function(doc, status, xhr) {
-                window.location.hash = '#'+docId;
-                callback.call(w, doc);
-            },
-            error: function(xhr, status, error) {
-                w.dialogManager.show('message', {
-                    title: 'Error',
-                    msg: 'An error ('+status+') occurred and '+docId+' was not loaded.',
-                    type: 'error'
-                });
-                callback.call(w, null);
-                
-                w.event('documentLoaded').publish(false, null);
-            },
-            dataType: 'xml'
-        });*/
-    };
-    
-    /**
-     * @callback Delegator~loadDocumentCallback
-     * @param {(Document|null)} document Returns the document or null if there was an error
-     */
-    
-    /**
-     * Performs the server call to save the document.
-     * @fires Writer#documentSaved
-     * @param {String} docId The document ID
-     * @param {Delegator~saveDocumentCallback} callback
-     */
-    del.saveDocument = function(docId, callback) {
-   
+    }
+
+    del.getTemplates = function(callback) {
+        // don't use this with gitDelegator
     };
 
+    del.getDocuments = function(callback) {
+        // don't use this with git delegator
+    };
+
+    del.loadTemplate = function(path, callback) {
+        // don't use this with gitDelegator
+    };
     
-    
+    del.loadDocument = function(docId, callback) {
+        // don't use this with gitDelegator
+    };    
+
+    del.saveDocument = function(docId, callback) {
+        // don't use this with gitDelegator
+    };
+
     del.saveAndExit = function(callback) {
-      
+      // don't use this with gitDelegator
     };
 
     function processSuccessfulSave(docId) {
@@ -345,35 +227,12 @@ function Delegator(writer) {
         return w.utilities.getDocumentationForTag(tagName);
     };
     
-    
-
-   
-    
-/*  
-    function markCWRCRepos() {
-        $( ".git-repo" ).each(function( index ) {
-            var $this = $(this);
-            var $gitHubRepoId = $this.data('ghrepoID');
-            if (checkIfCWRCRepo($gitHubRepoId)) {
-                $this.addClass('non-cwrc');
-            }
-        });
-    }
-
-    function showCWRCRepos() {
-        $('.non-cwrc').hide();
-    }
-
-    function showAllRepos() {
-        $('.non-cwrc').show();
-    }
-*/
-    function getInfoForAuthenticatedUser() {
-        cwrcGit.getInfoForAuthenticatedUser()
+    function getInfoAndReposForAuthenticatedUser() {
+        return cwrcGit.getInfoForAuthenticatedUser()
             .done(function( info ) {
                 writer.githubUser = info;
-                $('#private-tab').text(`${writer.githubUser.login} repos`);
-                
+                $('#private-tab').text(`${writer.githubUser.login} documents`);
+                showRepos(writer.githubUser.login, '#github-private-doc-list');
             }).fail(function(errorMessage) {
                 console.log("in the fail");
                 var message = (errorMessage == 'login')?`You must first authenticate with Github.`:`Couldn't find anything for that id.  Please try again.`;
@@ -385,14 +244,12 @@ function Delegator(writer) {
     function getDoc(reponame) {
         cwrcGit.getDoc(reponame)
             .done(function( result ) {
-                console.log(result);
                 w.repoName = result.repo;
                 w.repoOwner = result.owner;
                 w.parentCommitSHA = result.parentCommitSHA;
                 w.baseTreeSHA = result.baseTreeSHA;
                 var xmlDoc = $.parseXML(result.doc);
                 w.fileManager.loadDocumentFromXml(xmlDoc);
-                console.log(w);
             }).fail(function(errorMessage) {
                 console.log("in the getDoc fail");
                 console.log(errorMessage);
@@ -412,36 +269,59 @@ function Delegator(writer) {
     }
 
     function saveDoc() {
-        console.log("in the save doc method in js/dialogs/fileManager.js")
+       // console.log("in the save doc method in js/dialogs/fileManager.js")
         var versionTimestamp = Math.floor(Date.now() / 1000);
         return cwrcGit.saveDoc(w.repoName, w.repoOwner, w.parentCommitSHA, w.baseTreeSHA, w.converter.getDocumentContent(true), versionTimestamp)
     }
-
+/*
     function showReposForAuthenticatedGithubUser() {
-        cwrcGit.getReposForAuthenticatedGithubUser()
-            .done(function( repos ) {
-                populateRepoList(repos, '#github-private-doc-list');
+       // cwrcGit.getReposForAuthenticatedGithubUser()
+            .done(function( results let queryString = 'CWRC-GitWriter-web-app';
+          //  if (publicTopicTerms) queryString += "+" + publicTopicTerms;
+            if (publicSearchTerms) queryString += "+" + publicSearchTerms;
+            queryString += "+user:" + writer.githubUser;
+            cwrcGit.search(queryString) ) {
+               // populateRepoList(repos, '#github-private-doc-list');
+               populateResultsList(results, '#github-private-doc-list');
                 //console.log(repos);
             }).fail(function(errorMessage) {
                 console.log("in the fail");
                 var message = (errorMessage == 'login')?`You must first authenticate with Github.`:`Couldn't find anything for that id.  Please try again.`;
                 $('#cwrc-message').text(message).show();
             });
-    }
+    }*/
 
-    function showReposForGitHubUser(gitName) {   
-        cwrcGit.getReposForGithubUser(gitName)
-            .done(function( repos ) {
-                populateRepoList(repos, '#github-public-doc-list')
-            }).fail(function(errorMessage) {
-                $('#cwrc-message').text(`Couldn't find anything for that id.  Please try again.`).show();
-            });
+    function showRepos(gitName, listContainerId, searchTerms) {   
+
+        console.log('gitname in showRepos line 321');
+        console.log(gitName);
+
+       // if (publicSearchTerms || publicTopicTerms) {
+            let queryString = 'CWRC-GitWriter-web-app';
+          //  if (publicTopicTerms) queryString += "+" + publicTopicTerms;
+            if (searchTerms) queryString += "+" + searchTerms;
+            if (gitName) queryString += "+user:" + gitName;
+            cwrcGit.search(queryString)
+                .done(function (results) {
+                  //  console.log(results)
+                    populateResultList(results, listContainerId)
+                }).fail(function(errorMessage) {
+                    $('#cwrc-message').text(`Couldn't find anything for your query.  Please try again.`).show()
+                })
+      //  } else if (gitName) {
+       //     cwrcGit.getReposForGithubUser(gitName)
+       //         .done(function( repos ) {
+      //              populateRepoList(repos, '#github-public-doc-list')
+      //          }).fail(function(errorMessage) {
+       //             $('#cwrc-message').text(`Couldn't find anything for that id.  Please try again.`).show();
+        //        });
+       // }
     }
 
     function showTemplates() {   
         cwrcGit.getTemplates()
             .done(function( templates ) {
-                console.log(templates);
+              //  console.log(templates);
                 populateTemplateList(templates, '#template-list')
             }).fail(function(errorMessage) {
                 $('#cwrc-message').text(`Couldn't find the templates. Please check your connection or try again.`).show();
@@ -476,8 +356,8 @@ function Delegator(writer) {
     function getTemplate(templateName) {
         cwrcGit.getTemplate(templateName)
             .done(function( result ) {
-                console.log("got the result")
-                console.log(result);
+               // console.log("got the result")
+              //  console.log(result);
                // var xmlDoc = $.parseXML(result);
                 w.fileManager.loadDocumentFromXml(result);
                 //console.log(w);
@@ -486,7 +366,7 @@ function Delegator(writer) {
                 console.log(errorMessage);
             });
     }
-
+/*
     function populateRepoList(repos, listGroupId) {
         $(function () { 
             var listContainer = $(listGroupId);
@@ -498,6 +378,41 @@ function Delegator(writer) {
                         <h4 class="list-group-item-heading">${repo.full_name}</h4>
                         <p class="list-group-item-text">${repo.id} -- ${repo.description}</p>
                     </a>`);
+            }
+
+            $('#cwrc-message').hide();
+            
+            $(`${listGroupId} .list-group-item`).on('click', function() {
+                var $this = $(this);
+                var $gitHubRepoName = $this.data('ghrepo');
+                getDoc($gitHubRepoName);
+                
+                $('#githubLoadModal').modal('hide');
+            });
+            
+        });
+    }   */
+
+     function populateResultList(results, listGroupId) {
+        $(function () { 
+            var listContainer = $(listGroupId);
+            listContainer.empty()
+
+            for (let result of results.items) {
+                console.log("should be the result in populateRepoList")
+                console.log(result);
+                let htmlForResultRow =
+                    `<a id="gh_${result.repository.id}" href="#" data-ghrepo="${result.repository.full_name}" data-ghrepoid="${result.repository.id}" class="list-group-item git-repo">
+                        <h4 class="list-group-item-heading">${result.repository.full_name}</h4>
+                        <p class="list-group-item-text">${result.repository.description}</p>`;
+                for (let textMatch of result.text_matches) {
+                    if (! textMatch.fragment.includes('CWRC-GitWriter-web-app')) {
+                        htmlForResultRow += `<p>${textMatch.fragment}</p>`
+                    }
+                }
+                htmlForResultRow += `</a>`;
+                listContainer.prepend(htmlForResultRow);
+                
             }
 
             $('#cwrc-message').hide();
@@ -655,6 +570,7 @@ function Delegator(writer) {
      
                     <div id="menu" class="modal-body">
                         <div style="margin-bottom:2em">
+                            
                             <button type="button" class="close" data-dismiss="modal" aria-hidden="true" style="float:right"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></button>
                             <h4 id="gh-modal-title' class="modal-title" style="text-align:center">Load From a CWRC-enabled Github Repository</h4>
                         </div>
@@ -669,26 +585,36 @@ function Delegator(writer) {
                             <a class="nav-link active" id="private-tab" data-toggle="tab" href="#private" role="tab">My Github Documents</a>
                           </li>
                           <li class="nav-item">
-                            <a class="nav-link" data-toggle="tab" href="#public" role="tab">Public Github Documents</a>
+                            <a class="nav-link" data-toggle="tab" href="#public" role="tab">Search all public CWRC Github documents</a>
                           </li>
                           <li class="nav-item">
-                            <a class="nav-link" data-toggle="tab" href="#templates" role="tab">Templates</a>
+                            <a class="nav-link" data-toggle="tab" href="#templates" role="tab">CWRC Templates</a>
                           </li>
-                          <li class="nav-item">
-                            <a class="nav-link" data-toggle="tab" href="#search" role="tab">Search Github</a>
-                          </li>
+                          
                         </ul>
 
                         <!-- Tab panes -->
                         <div class="tab-content">
                             <div class="tab-pane active" id="private" role="tabpanel">
-                                <div class="row" style="margin-top:1em">
-                                    <div class="col-lg-12">
-                                        <button id="open-new-doc-btn" href="#github-new-form"  class="btn btn-default"  data-toggle="collapse" style="float:right;">Create new document</button>
-                                        <!--button id="sign-out-github-btn" class="btn btn-default" style="float:right">Sign out of Github</button-->
+                                <form role="search" id="github-private-form">
+                                    <div class="row" style="margin-top:1em">
+                                        <div class="col-xs-4">   
+                                            <div class="input-group">
+                                                <input type="text" class="form-control input-md" id="private-search-terms" name="private-search-terms"
+                                                       placeholder="Search your documents"/>
+                                                <span class="input-group-btn">
+                                                    <button type="submit" value="Submit" class="btn btn-default"><span class="glyphicon glyphicon-search" aria-hidden="true"></span>&nbsp;</button>
+                                                </span>
+                                            </div>  
+                                        </div>
+                                        <div class="col-xs-4">
+                                            
+                                        </div>
+                                        <div class="col-xs-4">
+                                            <button id="open-new-doc-btn" href="#github-new-form"  class="btn btn-default"  style="float:right" data-toggle="collapse" >Create new document</button>
+                                        </div>
                                     </div>
-                                    
-                                </div>
+                                </form>
                                 
                                 <form id="github-new-form" class="well collapse" style="margin-top:1em">
                                     
@@ -731,43 +657,47 @@ function Delegator(writer) {
                             
                             <!-- PUBLIC REPOS PANE -->
                             <div class="tab-pane" id="public" role="tabpanel">
-                                <div class=row>
-                                    <span class="col-lg-8"></span>
-                                    <form class="form-group col-lg-4" id="github-user-id-form" style="float:right;margin-top:1em;margin-bottom:1em">
-                                        <div class="input-group" >
-                                            <input id="git-user" type="text" class="form-control" placeholder="Github username" aria-describedby="git-user-addon"/>
-                                            <div class="input-group-btn" id="git-user-id-addon">
-                                                <a
-                                                    role="button"
-                                                    type="button" 
-                                                    class="btn btn-default" 
-                                                    data-container="body" 
-                                                    tabindex="0" 
-                                                    data-toggle="popover" 
-                                                    data-trigger="focus" 
-                                                    title="Github user" 
-                                                    data-content="The Github account containing the repository for the document you'd like to load.  Only public documents will be shown if you use this option." 
-                                                    
-                                                    aria-hidden="true">
-                                                    <span class="glyphicon glyphicon-question-sign"></span>
-                                                </a>
-                                                <button type="submit" value="Submit" id="new-user-btn" class="btn btn-default">Go</button>
+                                
+                                    <form role="search" id="github-public-form">
+                                        <div class="row" style="margin-top:1em">
+                                            <div class="col-xs-4">   
+                                                <div class="input-group">
+                                                    <input type="text" class="form-control input-md" id="public-search-terms" name="public-search-terms"
+                                                           placeholder="Search"/>
+                                                    <span class="input-group-btn">
+                                                        <button type="submit" value="Submit" class="btn btn-default"><span class="glyphicon glyphicon-search" aria-hidden="true"></span>&nbsp;</button>
+                                                    </span>
+                                                </div>  
                                             </div>
-                                        </div><!-- /input-group -->
-                                    </form><!-- /form-group -->
-                                </div> <!-- row -->
+                                            <div class="col-xs-4">
+                                                <!--div class="input-group">
+                                                    <input type="text" class="form-control input-md" id="public-topic-terms" name="public-topic-terms"
+                                                           placeholder="Filter by GitHub topic"/>
+                                                    <span class="input-group-btn">
+                                                        <button type="submit" value="Submit" class="btn btn-default"><span class="glyphicon glyphicon-search" aria-hidden="true"></span>&nbsp;</button>
+                                                    </span>
+                                                </div-->  
+                                            </div>
+                                            <div class="col-xs-4">
+                                                <div class="input-group" >
+                                                    <input id="git-user" type="text" class="form-control" placeholder="Limit to github user or organization" aria-describedby="git-user-addon"/>
+                                                    <div class="input-group-btn" id="git-user-id-addon">
+                                                        <button type="submit" value="Submit" id="new-user-btn" class="btn btn-default"><span class="glyphicon glyphicon-search" aria-hidden="true"></span>&nbsp;</button>
+                                                    </div>
+                                                </div><!-- /input-group -->
+                                            </div>
+                                        </div>
+                                    </form>
+
+                               
                                 <div id="github-public-doc-list" class="list-group"></div>
                             </div><!-- /tab-pane -->
 
                             <!-- TEMPLATES PANE -->
                             <div class="tab-pane" id="templates" role="tabpanel">
-                                <div id="template-list" class="list-group"></div>
-                            </div><!-- /tab-pane -->
-
-
-                            <!-- SEARCH PANE -->
-
-                            <div class="tab-pane" id="search" role="tabpanel">...</div><!-- /tab-pane -->
+                            
+                                <div id="template-list" class="list-group" style="padding-top:1em"></div>
+                            </div><!-- /tab-pane -->                     
 
                         </div> <!-- /tab-content -->
                     </div><!-- /.modal-body -->
@@ -783,10 +713,18 @@ function Delegator(writer) {
             $('[data-toggle="popover"]').popover()
         });
 
-        $('#github-user-id-form').submit(function(event){
+        $('#github-public-form').submit(function(event){
           event.preventDefault();
           var gitName = $('#git-user').val();
-          showReposForGitHubUser(gitName);
+          var publicSearchTerms = $('#public-search-terms').val();
+         // var publicTopicTerms = $('#public-topic-terms').val();
+          showRepos(gitName,'#github-public-doc-list',publicSearchTerms);
+        });
+
+        $('#github-private-form').submit(function(event){
+          event.preventDefault();
+          var privateSearchTerms = $('#private-search-terms').val();
+          showRepos(writer.githubUser.login,'#github-private-doc-list',privateSearchTerms);
         });
 
         $('#github-new-form').submit(function(event){
@@ -798,8 +736,7 @@ function Delegator(writer) {
         });
 
         if (Cookies.get('cwrc-token')) {
-            getInfoForAuthenticatedUser();
-            showReposForAuthenticatedGithubUser();
+            getInfoAndReposForAuthenticatedUser();
             showTemplates();
             $('#open-new-doc-btn').show();
             $('#cwrc-message').hide();
@@ -807,7 +744,6 @@ function Delegator(writer) {
             $('#githubLoadModal').modal();
         } else {
             del.authenticate();
-            // 
             // BUT REALLY, SHOULDN'T GET HERE WITHOUT HAVING LOGGED IN.
         }   
         
@@ -845,7 +781,6 @@ function Delegator(writer) {
                                     <div class="input-group" >
                                         <div class="input-group-btn" >
                                             <button type="button" id="git-oauth-btn" class="btn btn-default">Authenticate with Github</button>
-                                       
                                         </div>
                                     </div> <!--input group -->
                                 </div>
@@ -860,23 +795,9 @@ function Delegator(writer) {
             });
 
             $('#githubAuthenticateModal').modal('show').on('shown.bs.modal', function () {
-                    $(".modal").css('display', 'block');
-                })
-            
-         
-
-            // might want to at some point use the following to confirm with the user that they'd like to 
-            // continue on with the account last used?  That might not be a good idea though.  Someone might 
-            // come along and thereby realize they are in someone else's account.  Hmmmm, I don't know.  
-            // Just log out a prior user then?  I guess at some point, could ask user if they want to keep the
-            // cookie on the given machine.
-            /*if (Cookies.get('cwrc-token')) {
-                getInfoForAuthenticatedUser();
-                showReposForAuthenticatedGithubUser();
-                $('#git-oath-btn-grp').hide();
-                $('#sign-out-github-btn').show();
-                $('#open-new-doc-btn').show();
-             }  */  
+                $(".modal").css('display', 'block');
+            })
+             
             return false
         } 
         
