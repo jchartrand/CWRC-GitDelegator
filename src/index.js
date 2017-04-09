@@ -2,12 +2,12 @@
 if (!window.$) {
     window.jQuery = window.$ = require('jquery');
 }
-let Octokit = require('octokit');
-let Cookies = require('js-cookie');
+var Octokit = require('octokit');
+var Cookies = require('js-cookie');
 require('bootstrap');
-let cwrcGit = require('cwrc-git-server-client');
+var cwrcGit = require('cwrc-git-server-client');
 
-let cwrcAppName = "CWRC-GitWriter" + "-web-app";
+var cwrcAppName = "CWRC-GitWriter" + "-web-app";
 /**
  * @class Delegator
  * @param {Writer} writer
@@ -230,7 +230,7 @@ function Delegator(writer) {
     
     function getInfoAndReposForAuthenticatedUser() {
         return cwrcGit.getInfoForAuthenticatedUser()
-            .done(function( info ) {
+            .done(info => {
                 writer.githubUser = info;
                 $('#private-tab').text(`${writer.githubUser.login} documents`);
                 showRepos(writer.githubUser.login, '#github-private-doc-list');
@@ -257,8 +257,35 @@ function Delegator(writer) {
             });
     }
 
+    var blankTEIDoc = `
+    <?xml version="1.0" encoding="UTF-8"?>
+<?xml-model href="http://cwrc.ca/schemas/cwrc_tei_lite.rng" type="application/xml" schematypens="http://relaxng.org/ns/structure/1.0"?>
+<?xml-stylesheet type="text/css" href="http://cwrc.ca/templates/css/tei.css"?>
+<TEI xmlns="http://www.tei-c.org/ns/1.0" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:cw="http://cwrc.ca/ns/cw#" xmlns:w="http://cwrctc.artsrn.ualberta.ca/#"><rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:cw="http://cwrc.ca/ns/cw#" xmlns:oa="http://www.w3.org/ns/oa#" xmlns:cnt="http://www.w3.org/2011/content#" xmlns:time="http://www.w3.org/2006/time#" xmlns:foaf="http://xmlns.com/foaf/0.1/" xmlns:geo="http://www.w3.org/2003/01/geo/wgs84_pos#">
+    <teiHeader>
+        <fileDesc>
+            <titleStmt>
+                <title>Sample Document Title</title>
+            </titleStmt>
+            <publicationStmt>
+                <p></p>
+            </publicationStmt>
+            <sourceDesc sameAs="http://www.cwrc.ca">
+                <p>Created from original research by members of CWRC/CSÉC unless otherwise noted.</p>
+            </sourceDesc>
+        </fileDesc>
+    </teiHeader>
+    <text>
+        <body>
+            <div>
+                Replace with your text.
+            </div>
+        </body>
+    </text>
+</TEI>`;
+
     function createRepoWithBlankDoc(repoName, repoDescription, isPrivate) {
-        cwrcGit.createCWRCRepo(repoName, isPrivate, repoDescription, '<?xml version="1.0"?><TEI>some text</TEI>')
+        cwrcGit.createCWRCRepo(repoName, isPrivate, repoDescription, blankTEIDoc)
             .done(result=>{})
             .fail(errorMessage=>{})
     }
@@ -277,7 +304,7 @@ function Delegator(writer) {
 /*
     function showReposForAuthenticatedGithubUser() {
        // cwrcGit.getReposForAuthenticatedGithubUser()
-            .done(function( results let queryString = cwrcAppName;
+            .done(function( results var queryString = cwrcAppName;
           //  if (publicTopicTerms) queryString += "+" + publicTopicTerms;
             if (publicSearchTerms) queryString += "+" + publicSearchTerms;
             queryString += "+user:" + writer.githubUser;
@@ -295,7 +322,7 @@ function Delegator(writer) {
     function showRepos(gitName, listContainerId, searchTerms) {   
 
        // if (publicSearchTerms || publicTopicTerms) {
-            let queryString = cwrcAppName;
+            var queryString = cwrcAppName;
           //  if (publicTopicTerms) queryString += "+" + publicTopicTerms;
             if (searchTerms) queryString += "+" + searchTerms;
             if (gitName) queryString += "+user:" + gitName;
@@ -331,7 +358,7 @@ function Delegator(writer) {
             var listContainer = $(listGroupId);
             listContainer.empty()
 
-            for (let template of templates) {
+            for (var template of templates) {
                 listContainer.prepend(`
                     <a id="gh_${template.name}" href="#" data-template="${template.name}" class="list-group-item git-repo">
                         <h4 class="list-group-item-heading">${template.name}</h4>
@@ -370,7 +397,7 @@ function Delegator(writer) {
             var listContainer = $(listGroupId);
             listContainer.empty()
 
-            for (let repo of repos) {
+            for (var repo of repos) {
                 listContainer.prepend(`
                     <a id="gh_${repo.id}" href="#" data-ghrepo="${repo.full_name}" data-ghrepoid="${repo.id}" class="list-group-item git-repo">
                         <h4 class="list-group-item-heading">${repo.full_name}</h4>
@@ -396,14 +423,14 @@ function Delegator(writer) {
             var listContainer = $(listGroupId);
             listContainer.empty()
 
-            for (let result of results.items) {
+            for (var result of results.items) {
                 console.log("should be the result in populateRepoList")
                 console.log(result);
-                let htmlForResultRow =
+                var htmlForResultRow =
                     `<a id="gh_${result.repository.id}" href="#" data-ghrepo="${result.repository.full_name}" data-ghrepoid="${result.repository.id}" class="list-group-item git-repo">
                         <h4 class="list-group-item-heading">${result.repository.full_name}</h4>
                         <p class="list-group-item-text">${result.repository.description}</p>`;
-                for (let textMatch of result.text_matches) {
+                for (var textMatch of result.text_matches) {
                     if (! textMatch.fragment.includes(cwrcAppName)) {
                         htmlForResultRow += `<p>${textMatch.fragment}</p>`
                     }
