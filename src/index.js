@@ -230,7 +230,7 @@ function Delegator(writer) {
     
     function getInfoAndReposForAuthenticatedUser() {
         return cwrcGit.getInfoForAuthenticatedUser()
-            .done(info => {
+            .done(function(info) {
                 writer.githubUser = info;
                 $('#private-tab').text(`${writer.githubUser.login} documents`);
                 showRepos(writer.githubUser.login, '#github-private-doc-list');
