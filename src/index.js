@@ -286,8 +286,8 @@ function Delegator(writer) {
 
     function createRepoWithBlankDoc(repoName, repoDescription, isPrivate) {
         cwrcGit.createCWRCRepo(repoName, isPrivate, repoDescription, blankTEIDoc)
-            .done(result=>{})
-            .fail(errorMessage=>{})
+            .done(function(result){})
+            .fail(function(errorMessage){})
     }
 
     function createRepoForCurrentDoc(repoName, repoDesc, isPrivate) {
@@ -536,12 +536,14 @@ function Delegator(writer) {
           var repoDesc = $('#save-git-doc-description').val();
           var isPrivate = $('#save-git-doc-private').checked;
           createRepoForCurrentDoc(repoName, repoDesc, isPrivate).then(
-            success=>{
+            function(success){
                     //alert(success);
                     $('#githubSaveModal').modal('hide');
                     $('#save-cwrc-message').text(`This document is associated with the ${w.repoOwner}/${w.repoName} GitHub repository.  You may save to it, or save to a new repository.`);
                 },
-            failure=>$('#save-cwrc-message').text("Couldn't save.").show());
+            function(failure){
+                $('#save-cwrc-message').text("Couldn't save.").show()
+            });
         });
 
         if (Cookies.get('cwrc-token')) {
@@ -554,9 +556,9 @@ function Delegator(writer) {
             $('#open-save-new-doc-btn').hide();
         }
 
-        $('#open-save-new-doc-btn').click(ev=>$('#github-save-form').hide());
+        $('#open-save-new-doc-btn').click(function(ev){$('#github-save-form').hide()});
 
-        $('#dismiss-save-new-btn').click(ev=>{
+        $('#dismiss-save-new-btn').click(function(ev){
             $('#github-save-form').show();
             $('#github-save-new-form').hide();
         });
@@ -571,10 +573,10 @@ function Delegator(writer) {
         } 
         $('#save-doc-btn').click(function(event){
             saveDoc().then(
-                success=>{
+                function(success){
                     $('#githubSaveModal').modal('hide');
                 },
-                failure=>{
+                function(failure){
                     console.log("save failed, and the return value is: ");
                     console.log(failure);
                     //alert(failure);
