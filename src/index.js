@@ -8,6 +8,34 @@ require('bootstrap');
 var cwrcGit = require('cwrc-git-server-client');
 
 var cwrcAppName = "CWRC-GitWriter" + "-web-app";
+
+var blankTEIDoc = `
+    <?xml version="1.0" encoding="UTF-8"?>
+<?xml-model href="http://cwrc.ca/schemas/cwrc_tei_lite.rng" type="application/xml" schematypens="http://relaxng.org/ns/structure/1.0"?>
+<?xml-stylesheet type="text/css" href="http://cwrc.ca/templates/css/tei.css"?>
+<TEI xmlns="http://www.tei-c.org/ns/1.0" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:cw="http://cwrc.ca/ns/cw#" xmlns:w="http://cwrctc.artsrn.ualberta.ca/#">
+    <teiHeader>
+        <fileDesc>
+            <titleStmt>
+                <title>Sample Document Title</title>
+            </titleStmt>
+            <publicationStmt>
+                <p></p>
+            </publicationStmt>
+            <sourceDesc sameAs="http://www.cwrc.ca">
+                <p>Created from original research by members of CWRC/CSÉC unless otherwise noted.</p>
+            </sourceDesc>
+        </fileDesc>
+    </teiHeader>
+    <text>
+        <body>
+            <div>
+                Replace with your text.
+            </div>
+        </body>
+    </text>
+</TEI>`;
+
 /**
  * @class Delegator
  * @param {Writer} writer
@@ -257,35 +285,13 @@ function Delegator(writer) {
             });
     }
 
-    var blankTEIDoc = `
-    <?xml version="1.0" encoding="UTF-8"?>
-<?xml-model href="http://cwrc.ca/schemas/cwrc_tei_lite.rng" type="application/xml" schematypens="http://relaxng.org/ns/structure/1.0"?>
-<?xml-stylesheet type="text/css" href="http://cwrc.ca/templates/css/tei.css"?>
-<TEI xmlns="http://www.tei-c.org/ns/1.0" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:cw="http://cwrc.ca/ns/cw#" xmlns:w="http://cwrctc.artsrn.ualberta.ca/#"><rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:cw="http://cwrc.ca/ns/cw#" xmlns:oa="http://www.w3.org/ns/oa#" xmlns:cnt="http://www.w3.org/2011/content#" xmlns:time="http://www.w3.org/2006/time#" xmlns:foaf="http://xmlns.com/foaf/0.1/" xmlns:geo="http://www.w3.org/2003/01/geo/wgs84_pos#">
-    <teiHeader>
-        <fileDesc>
-            <titleStmt>
-                <title>Sample Document Title</title>
-            </titleStmt>
-            <publicationStmt>
-                <p></p>
-            </publicationStmt>
-            <sourceDesc sameAs="http://www.cwrc.ca">
-                <p>Created from original research by members of CWRC/CSÉC unless otherwise noted.</p>
-            </sourceDesc>
-        </fileDesc>
-    </teiHeader>
-    <text>
-        <body>
-            <div>
-                Replace with your text.
-            </div>
-        </body>
-    </text>
-</TEI>`;
+    
 
     function createRepoWithBlankDoc(repoName, repoDescription, isPrivate) {
-        cwrcGit.createCWRCRepo(repoName, isPrivate, repoDescription, blankTEIDoc)
+        var annotations = "";
+        var versionTimestamp = Math.floor(Date.now() / 1000);
+        
+        cwrcGit.createCWRCRepo(repoName, repoDescription, isPrivate, blankTEIDoc, annotations, versionTimestamp)
             .done(function(result){})
             .fail(function(errorMessage){})
     }
@@ -293,13 +299,15 @@ function Delegator(writer) {
     function createRepoForCurrentDoc(repoName, repoDesc, isPrivate) {
         var annotations = "some annotations";
         var versionTimestamp = Math.floor(Date.now() / 1000);
-        return cwrcGit.createCWRCRepo(repoName, repoDesc, isPrivate, w.converter.getDocumentContent(true), annotations, versionTimestamp)
+        var docText = w.converter.getDocumentContent(true);
+        return cwrcGit.createCWRCRepo(repoName, repoDesc, isPrivate, docText, annotations, versionTimestamp)
     }
 
     function saveDoc() {
-       // console.log("in the save doc method in js/dialogs/fileManager.js")
         var versionTimestamp = Math.floor(Date.now() / 1000);
-        return cwrcGit.saveDoc(w.repoName, w.repoOwner, w.parentCommitSHA, w.baseTreeSHA, w.converter.getDocumentContent(true), versionTimestamp)
+        var docText = w.converter.getDocumentContent(true);
+        
+        return cwrcGit.saveDoc(w.repoName, w.repoOwner, w.parentCommitSHA, w.baseTreeSHA, docText, versionTimestamp)
     }
 /*
     function showReposForAuthenticatedGithubUser() {
@@ -328,7 +336,6 @@ function Delegator(writer) {
             if (gitName) queryString += "+user:" + gitName;
             cwrcGit.search(queryString)
                 .done(function (results) {
-                  //  console.log(results)
                     populateResultList(results, listContainerId)
                 }).fail(function(errorMessage) {
                     $('#cwrc-message').text(`Couldn't find anything for your query.  Please try again.`).show()
@@ -346,7 +353,6 @@ function Delegator(writer) {
     function showTemplates() {   
         cwrcGit.getTemplates()
             .done(function( templates ) {
-              //  console.log(templates);
                 populateTemplateList(templates, '#template-list')
             }).fail(function(errorMessage) {
                 $('#cwrc-message').text(`Couldn't find the templates. Please check your connection or try again.`).show();
@@ -381,11 +387,7 @@ function Delegator(writer) {
     function getTemplate(templateName) {
         cwrcGit.getTemplate(templateName)
             .done(function( result ) {
-               // console.log("got the result")
-              //  console.log(result);
-               // var xmlDoc = $.parseXML(result);
                 w.fileManager.loadDocumentFromXml(result);
-                //console.log(w);
             }).fail(function(errorMessage) {
                 console.log("in the getTemplate fail");
                 console.log(errorMessage);
@@ -424,8 +426,6 @@ function Delegator(writer) {
             listContainer.empty()
 
             for (var result of results.items) {
-                console.log("should be the result in populateRepoList")
-                console.log(result);
                 var htmlForResultRow =
                     `<a id="gh_${result.repository.id}" href="#" data-ghrepo="${result.repository.full_name}" data-ghrepoid="${result.repository.id}" class="list-group-item git-repo">
                         <h4 class="list-group-item-heading">${result.repository.full_name}</h4>
@@ -542,6 +542,7 @@ function Delegator(writer) {
                     $('#save-cwrc-message').text(`This document is associated with the ${w.repoOwner}/${w.repoName} GitHub repository.  You may save to it, or save to a new repository.`);
                 },
             function(failure){
+                console.log(failure);
                 $('#save-cwrc-message').text("Couldn't save.").show()
             });
         });
