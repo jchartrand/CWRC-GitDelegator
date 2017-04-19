@@ -771,13 +771,12 @@ function Delegator(writer) {
             $('#private-tab').tab('show')
             $('#githubLoadModal').modal();
             $('#githubLoadModal').on('hidden.bs.modal', function (e) {
-              if (!writer.editor.getBody()) {
-                writer.loadDocument(blankDoc)
+              if (!writer.editor.getBody().trim().length) {
+                writer.loadDocument(blankTEIDoc)
               }
             })
         } else {
             del.authenticate()
-            // BUT REALLY, SHOULDN'T GET HERE WITHOUT HAVING LOGGED IN.
         }   
         
     }

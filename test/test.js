@@ -61,11 +61,12 @@ let writerMock = {
 		documentLoaded: publish=>{true}
 	},
 	baseUrl: 'http://localhost/cwrc',
-	editor: {isNotDirty:1},
+	editor: {isNotDirty:1, getBody: ()=>'  '},
 	repoName: '',
     repoOwner: '',
     parentCommitSHA: '',
-    baseTreeSHA: ''  
+    baseTreeSHA: '',
+    loadDocument: (xml)=>{console.log(xml);console.log('loadDocument called')}
 };
 
 let gitDelegator = new gitDelegatorConstructor(writerMock);
