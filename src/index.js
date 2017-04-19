@@ -771,7 +771,9 @@ function Delegator(writer) {
             $('#private-tab').tab('show')
             $('#githubLoadModal').modal();
             $('#githubLoadModal').on('hidden.bs.modal', function (e) {
-              if (!writer.editor.getBody().trim().length) {
+                var body = writer.editor.getBody();
+                console.log(body);
+              if (!writer.editor.getBody()) {
                 writer.loadDocument(blankTEIDoc)
               }
             })
