@@ -61,7 +61,7 @@ let writerMock = {
 		documentLoaded: publish=>{true}
 	},
 	baseUrl: 'http://localhost/cwrc',
-	editor: {isNotDirty:1, getBody: ()=>'  '},
+	editor: {isNotDirty:1, getContent: ()=>'  oh'},
 	repoName: '',
     repoOwner: '',
     parentCommitSHA: '',
