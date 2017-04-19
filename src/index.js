@@ -770,8 +770,13 @@ function Delegator(writer) {
             $('#cwrc-message').hide();
             $('#private-tab').tab('show')
             $('#githubLoadModal').modal();
+            $('#githubLoadModal').on('hidden.bs.modal', function (e) {
+              if (!writer.editor.getBody()) {
+                writer.loadDocument(blankDoc)
+              }
+            })
         } else {
-            del.authenticate();
+            del.authenticate()
             // BUT REALLY, SHOULDN'T GET HERE WITHOUT HAVING LOGGED IN.
         }   
         
