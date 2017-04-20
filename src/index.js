@@ -243,16 +243,20 @@ function Delegator(writer) {
             });
     }
 
+    function setDocInEditor(result) {
+        w.repoName = result.repo;
+        w.repoOwner = result.owner;
+        w.parentCommitSHA = result.parentCommitSHA;
+        w.baseTreeSHA = result.baseTreeSHA;
+        var xmlDoc = $.parseXML(result.doc);
+        w.fileManager.loadDocumentFromXml(xmlDoc);
+    }
 
     function getDoc(reponame) {
+
         cwrcGit.getDoc(reponame)
             .done(function( result ) {
-                w.repoName = result.repo;
-                w.repoOwner = result.owner;
-                w.parentCommitSHA = result.parentCommitSHA;
-                w.baseTreeSHA = result.baseTreeSHA;
-                var xmlDoc = $.parseXML(result.doc);
-                w.fileManager.loadDocumentFromXml(xmlDoc);
+                setDocInEditor(result)
             }).fail(function(errorMessage) {
                 console.log("in the getDoc fail");
                 console.log(errorMessage);
@@ -262,26 +266,49 @@ function Delegator(writer) {
     
 
     function createRepoWithBlankDoc(repoName, repoDescription, isPrivate) {
+        w.event('savingDocument').publish();
         var annotations = "";
         var versionTimestamp = Math.floor(Date.now() / 1000);
         
         cwrcGit.createCWRCRepo(repoName, repoDescription, isPrivate, blankTEIDoc, annotations, versionTimestamp)
-            .done(function(result){})
-            .fail(function(errorMessage){})
+            .done(function(result){
+                setDocInEditor(result);
+                w.event('documentSaved').publish(true)
+            })
+            .fail(function(errorMessage){
+                w.event('documentSaved').publish(false)
+            })
+            
     }
 
     function createRepoForCurrentDoc(repoName, repoDesc, isPrivate) {
+        w.event('savingDocument').publish();
         var annotations = "some annotations";
         var versionTimestamp = Math.floor(Date.now() / 1000);
         var docText = w.converter.getDocumentContent(true);
         return cwrcGit.createCWRCRepo(repoName, repoDesc, isPrivate, docText, annotations, versionTimestamp)
+            .done(function(result){
+                setDocInEditor(result);
+                w.event('documentSaved').publish(true)
+            })
+            .fail(function(errorMessage){
+                w.event('documentSaved').publish(false)
+            })
     }
 
     function saveDoc() {
+        w.event('savingDocument').publish();
         var versionTimestamp = Math.floor(Date.now() / 1000);
         var docText = w.converter.getDocumentContent(true);
         
         return cwrcGit.saveDoc(w.repoName, w.repoOwner, w.parentCommitSHA, w.baseTreeSHA, docText, versionTimestamp)
+            .done(function(result){
+                setDocInEditor(result);
+                w.event('documentSaved').publish(true)
+            })
+            .fail(function(errorMessage){
+                w.event('documentSaved').publish(false)
+            })
     }
 /*
     function showReposForAuthenticatedGithubUser() {
@@ -398,7 +425,6 @@ function Delegator(writer) {
         $(function () { 
             var listContainer = $(listGroupId);
             listContainer.empty()
-
             for (var result of results.items) {
                 var htmlForResultRow =
                     `<a id="gh_${result.repository.id}" href="#" data-ghrepo="${result.repository.full_name}" data-ghrepoid="${result.repository.id}" class="list-group-item git-repo">
@@ -406,8 +432,14 @@ function Delegator(writer) {
                         <p class="list-group-item-text">${result.repository.description}</p>`;
                 for (var textMatch of result.text_matches) {
                     if (! textMatch.fragment.includes(cwrcAppName)) {
-                        htmlForResultRow += `<p>${textMatch.fragment}</p>`
-                    }
+                        var fragment = textMatch.fragment;
+                        var searchString = textMatch.matches[0].text;
+                        var boldSearchString = `<b>${searchString}</b>`;
+                        var regex = new RegExp(searchString,"gi");
+                        var boldFragment = fragment.replace('<', '&lt;').replace('>', '&gt;').replace(regex, boldSearchString);
+
+                        htmlForResultRow += `<p>${boldFragment}</p>`
+                    } 
                 }
                 htmlForResultRow += `</a>`;
                 listContainer.prepend(htmlForResultRow);
@@ -755,11 +787,8 @@ function Delegator(writer) {
             })
         } else {
             del.authenticate()
-        }   
-        
+        }    
     }
-
-
 
     del.authenticate = function() {
          if (Cookies.get('cwrc-token')) {
