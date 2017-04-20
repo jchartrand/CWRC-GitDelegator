@@ -54,12 +54,7 @@ let writerMock = {
 	fileManager:{
     	loadDocumentFromXml: (xmlDoc)=>{testDoc=xmlDoc}
     },
-	event: {
-		validationInitiated: publish=>{true},
-		documentValidated: publish=>{true},
-		documentSaved: publish=>{true},
-		documentLoaded: publish=>{true}
-	},
+	event: (eventId)=>{return {publish: ()=>true}},
 	baseUrl: 'http://localhost/cwrc',
 	editor: {isNotDirty:1, getContent: ()=>'  oh'},
 	repoName: '',

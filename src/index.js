@@ -254,7 +254,7 @@ function Delegator(writer) {
 
     function getDoc(reponame) {
 
-        cwrcGit.getDoc(reponame)
+        return cwrcGit.getDoc(reponame)
             .done(function( result ) {
                 setDocInEditor(result)
             }).fail(function(errorMessage) {
@@ -541,10 +541,11 @@ function Delegator(writer) {
           var repoName = $('#save-git-doc-name').val();
           var repoDesc = $('#save-git-doc-description').val();
           var isPrivate = $('#save-git-doc-private').checked;
+          $('#githubSaveModal').modal('hide');
           createRepoForCurrentDoc(repoName, repoDesc, isPrivate).then(
             function(success){
                     //alert(success);
-                    $('#githubSaveModal').modal('hide');
+                   // $('#githubSaveModal').modal('hide');
                     $('#save-cwrc-message').text(`This document is associated with the ${w.repoOwner}/${w.repoName} GitHub repository.  You may save to it, or save to a new repository.`);
                 },
             function(failure){
@@ -579,9 +580,10 @@ function Delegator(writer) {
             $('#save-cwrc-message').text("This document isn't yet associated with a GitHub repository.");
         } 
         $('#save-doc-btn').click(function(event){
+            $('#githubSaveModal').modal('hide');
             saveDoc().then(
                 function(success){
-                    $('#githubSaveModal').modal('hide');
+                    //$('#githubSaveModal').modal('hide');
                 },
                 function(failure){
                     console.log("save failed, and the return value is: ");
@@ -766,7 +768,9 @@ function Delegator(writer) {
           var repoName = $('#git-doc-name').val();
           var repoDesc = $('#git-doc-description').val();
           var isPrivate = $('#git-doc-private').checked;
+          $('#githubLoadModal').modal('hide');
           createRepoWithBlankDoc(repoName, repoDesc, isPrivate);
+
         });
 
         if (Cookies.get('cwrc-token')) {
