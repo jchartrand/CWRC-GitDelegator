@@ -216,7 +216,7 @@ function Delegator(writer) {
             msg: docId+' was saved successfully.'
         });
        // window.location.hash = '#'+docId;
-        w.event('documentSaved').publish();
+        w.event('documentSaved').publish(true);
     };
 
 
@@ -252,8 +252,17 @@ function Delegator(writer) {
         w.fileManager.loadDocumentFromXml(xmlDoc);
     }
 
-    function getDoc(reponame) {
+    function setBlankDocumentInEditor() {
+        var defaultxmlDoc = $.parseXML(blankTEIDoc);
+        w.fileManager.loadDocumentFromXml(defaultxmlDoc);
+    }
 
+    function isCurrentDocValid() {
+        var contents = writer.editor.getContent({format: 'raw'});
+        return contents.includes('_tag')
+    }
+
+    function getDoc(reponame) {
         return cwrcGit.getDoc(reponame)
             .done(function( result ) {
                 setDocInEditor(result)
@@ -263,7 +272,7 @@ function Delegator(writer) {
             });
     }
 
-    
+   /* 
 
     function createRepoWithBlankDoc(repoName, repoDescription, isPrivate) {
         w.event('savingDocument').publish();
@@ -280,6 +289,7 @@ function Delegator(writer) {
             })
             
     }
+    */
 
     function createRepoForCurrentDoc(repoName, repoDesc, isPrivate) {
         w.event('savingDocument').publish();
@@ -295,7 +305,9 @@ function Delegator(writer) {
                 w.event('documentSaved').publish(false)
             })
     }
-
+/** 
+ * @return {[type]}
+ */
     function saveDoc() {
         w.event('savingDocument').publish();
         var versionTimestamp = Math.floor(Date.now() / 1000);
@@ -303,6 +315,8 @@ function Delegator(writer) {
         
         return cwrcGit.saveDoc(w.repoName, w.repoOwner, w.parentCommitSHA, w.baseTreeSHA, docText, versionTimestamp)
             .done(function(result){
+                console.log('the result returned from the save: ');
+                console.log(result);
                 setDocInEditor(result);
                 w.event('documentSaved').publish(true)
             })
@@ -570,10 +584,8 @@ function Delegator(writer) {
             $('#github-save-form').show();
             $('#github-save-new-form').hide();
         });
-
         
-        
-        $('#githubSaveModal').modal();
+        $('#githubSaveModal').modal({backdrop: 'static', keyboard: false});
         
         if (!w.repoName) {
             $('#save-doc-btn').hide();
@@ -606,9 +618,8 @@ function Delegator(writer) {
      
                     <div id="menu" class="modal-body">
                         <div style="margin-bottom:2em">
-                            
-                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true" style="float:right"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></button>
-                            <h4 id="gh-modal-title' class="modal-title" style="text-align:center">Load From a CWRC-enabled Github Repository</h4>
+                              <button id="close-load-btn" type="button" class="close"  aria-hidden="true" style="float:right"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></button>
+                           <h4 id="gh-modal-title' class="modal-title" style="text-align:center">Load From a CWRC-enabled Github Repository</h4>
                         </div>
                         <div style="margin-top:1em">
                             <div id="cwrc-message" class="text-warning" style="margin-top:1em">some text</div>
@@ -618,7 +629,7 @@ function Delegator(writer) {
                             <!-- Nav tabs -->
                         <ul class="nav nav-tabs" role="tablist">
                           <li class="nav-item">
-                            <a class="nav-link active" id="private-tab" data-toggle="tab" href="#private" role="tab">My Github Documents</a>
+                            <a class="nav-link active" id="private-tab" data-toggle="tab" href="#private" role="tab">My Documents</a>
                           </li>
                           <li class="nav-item">
                             <a class="nav-link" data-toggle="tab" href="#public" role="tab">Search all public CWRC Github documents</a>
@@ -647,47 +658,12 @@ function Delegator(writer) {
                                             
                                         </div>
                                         <div class="col-xs-4">
-                                            <button id="open-new-doc-btn" href="#github-new-form"  class="btn btn-default"  style="float:right" data-toggle="collapse" >Create new document</button>
+                                            <!--button id="open-new-doc-btn" href="#github-new-form"  class="btn btn-default"  style="float:right" data-toggle="collapse" >Blank Document</button-->
+                                            <button id="blank-doc-btn" class="btn btn-default"  style="float:right" >Blank Document</button>
                                         </div>
                                     </div>
                                 </form>
-                                
-                                <form id="github-new-form" class="well collapse" style="margin-top:1em">
-                                    
-                                        <div class="form-group">
-                                            <label for="git-doc-name">Document Name</label>
-                                            <small id="new-document-name-help" class="text-muted" style="margin-left:1em">
-                                              The name to give the new Github repository that will be created for the document.
-                                            </small>
-                                            <input id="git-doc-name" type="text" class="form-control" aria-describedby="new-document-name-help"/>
-                                        </div><!-- /form-group -->
-                                    
-                                        <div class="form-group">
-                                            <label for="git-doc-description">Description of document</label>
-                                            <small id="new-document-description-help" class="text-muted" style="margin-left:1em">
-                                                  A short description of the document that will appear on the github page.
-                                            </small>
-                                            <textarea class="form-control" id="git-doc-description" rows="3" aria-describedby="new-document-description-help"></textarea>    
-                                         </div><!-- /form-group -->
-                                    
-                                        <div class="form-group">
-                                            <div class="form-check">
-                                                <label class="form-check-label">
-                                                    <input id="git-doc-private" type="checkbox" class="form-check-input" aria-describedby="new-document-private-help">
-                                                    Private
-                                                </label>
-                                                <small id="new-document-private-help" class="text-muted" style="margin-left:1em">
-                                                      You may create a private repository if you have a paid Github account.
-                                                </small>
-                                            </div>
-                                         </div><!-- /form-group -->
-                                    
-                                        <div class="form-group">
-                                            <button type="button" href="#github-new-form" class="btn btn-default" data-toggle="collapse">Cancel</button>
-                                            <button type="submit" value="Submit" id="create-doc-btn" class="btn btn-default">Create</button>
-                                        </div>
-                                
-                                </form> 
+                          
                                 <div id="github-private-doc-list" class="list-group" style="padding-top:1em"></div>
                             </div><!-- /tab-pane -->
                             
@@ -738,7 +714,7 @@ function Delegator(writer) {
                         </div> <!-- /tab-content -->
                     </div><!-- /.modal-body -->
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn btn-default" id="cancel-load-btn">Cancel</button>
                     </div>
                 </div><!-- /.modal-content -->
             </div><!-- /.modal-dialog -->
@@ -747,6 +723,27 @@ function Delegator(writer) {
         // enable popover functionality - bootstrap requires explicit enabling
         $(function () {
             $('[data-toggle="popover"]').popover()
+        });
+
+        var checkDoc = function() {
+            if (isCurrentDocValid()) {
+                $('#githubLoadModal').modal('hide');
+            } else {
+                $('#cwrc-message').text('You must either load a document from GitHub or choose "Blank Document"').show()
+            }
+        }
+
+         $('#close-load-btn').click(function(event){
+            checkDoc()
+        });
+
+         $('#cancel-load-btn').click(function(event){
+            checkDoc()
+        });
+
+         $('#blank-doc-btn').click(function(event){
+            $('#githubLoadModal').modal('hide');
+            setBlankDocumentInEditor();
         });
 
         $('#github-public-form').submit(function(event){
@@ -763,13 +760,15 @@ function Delegator(writer) {
           showRepos(writer.githubUser.login,'#github-private-doc-list',privateSearchTerms);
         });
 
+
         $('#github-new-form').submit(function(event){
           event.preventDefault();
           var repoName = $('#git-doc-name').val();
           var repoDesc = $('#git-doc-description').val();
           var isPrivate = $('#git-doc-private').checked;
+         // console.log("should be about to close the repo");
           $('#githubLoadModal').modal('hide');
-          createRepoWithBlankDoc(repoName, repoDesc, isPrivate);
+           createRepoWithBlankDoc(repoName, repoDesc, isPrivate);
 
         });
 
@@ -779,16 +778,8 @@ function Delegator(writer) {
             $('#open-new-doc-btn').show();
             $('#cwrc-message').hide();
             $('#private-tab').tab('show')
-            $('#githubLoadModal').modal();
-            $('#githubLoadModal').on('hidden.bs.modal', function (e) {
-                var contents = writer.editor.getContent({format: 'raw'});
-                console.log(contents);
-              if (!contents.includes('_tag')) {
-                var defaultxmlDoc = $.parseXML(blankTEIDoc);
-                w.fileManager.loadDocumentFromXml(defaultxmlDoc);
-                //writer.loadDocument(blankTEIDoc)
-              }
-            })
+            $('#githubLoadModal').modal({backdrop: 'static', keyboard: false});
+            
         } else {
             del.authenticate()
         }    
