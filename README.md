@@ -20,11 +20,11 @@
 
 ### Overview
 
-Handles interaction with the server on behalf of [CWRC-GitWriter](https://github.com/jchartrand/CWRC-GitWriter), including spawning dialogs for file listing, loading, and saving.
+Handles interaction with the server on behalf of [CWRC-GitWriter](https://github.com/jchartrand/CWRC-GitWriter). Spawns dialogs for file listing, loading, and saving.
 
 ### Demo 
 
-The [CWRC GitHub Sandbox](http://208.75.74.217/editor_github.html) uses the NPM package published from this repository along with the code in [CWRC-Writer](https://github.com/jchartrand/CWRC-Writer), [CWRC-GitServer](https://github.com/jchartrand/CWRC-GitServer), [CWRC-GitWriter](https://github.com/jchartrand/CWRC-GitWriter), and [CWRC-GitServerClient](https://github.com/jchartrand/CWRC-GitServerClient). The same code is easily (for someone with modest development experience) installed on any server to run your own instance.
+The [CWRC-GitWriter](https://github.com/jchartrand/CWRC-GitWriter) code bundles together the code in this repository together with the [CWRC-WriterBase](https://github.com/jchartrand/CWRC-WriterBase) and the [CWRC-GitServerClient](https://github.com/jchartrand/CWRC-GitServerClient) to make up the portion of the CWRC-Writer that runs in the web browser.  The server side code is handled by [CWRC-GitServer](https://github.com/jchartrand/CWRC-GitServer), which is an Express.js server.  Both parts are demonstrated in the [CWRC GitHub Sandbox](http://208.75.74.217/editor_github.html). The same code is easily (for someone with modest development experience) installed on any server to run your own instance.
 
 ### Installation
 
@@ -44,7 +44,7 @@ The spec directory contains specifications (tests) that can help better understa
 
 ### API
 
-The methods exposed (API) by this package are:
+This module exports a javascript constructor that when invoked (with new), returns an object with the following methods:
 
 ```
 
