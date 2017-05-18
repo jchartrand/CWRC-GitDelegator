@@ -40,6 +40,7 @@ let writerMock = {
 	converter: {
 		getDocumentContent: (boolean)=>testDoc
 	},
+	githubUser: {login: 'jchartrand'},
 	schemaManager: {
 		schemaId: 'tei', 
 		schemas: {

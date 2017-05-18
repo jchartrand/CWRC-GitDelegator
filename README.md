@@ -20,6 +20,12 @@
 
 ### Overview
 
+<B>THIS PACKAGE HAS BEEN DEPRECATED.</B>
+
+THE FUNCTIONS FOR VALIDATING XML, GENERATING URIS, AND GETTING DOCUMENTATION AND HELP HAVE BEEN MOVED INTO [CWRC-WriterBase](https://github.com/jchartrand/CWRC-WriterBase) SINCE THE CALLS WERE SO INEXTRICABLY TIED TO THE BASE.  THE LOAD, SAVE, AND AUTHENTICATE CALLS  HAVE BEEN MOVED TO THEIR OWN PACKAGE: [cwrc-git-dialogs](https://github.com/jchartrand/cwrc-git-dialogs).
+
+
+
 Handles interaction with the server on behalf of [CWRC-GitWriter](https://github.com/jchartrand/CWRC-GitWriter). Spawns dialogs for file listing, loading, and saving.
 
 ### Demo 
@@ -200,7 +206,7 @@ getUriForAnnotation()
 
 ### Development
 
-An index.html and test/test.js are provided along with a browserify/watchify script in the package.json to allow working with the dialogs in a local browser.  Browserify bundles up the test.js script and puts the result in build/test.js which the index.html file loads.  
+An index.html and test/development.js are provided along with a browserify/watchify script in the package.json to allow working with the dialogs in a local browser.  Browserify bundles up the development.js script and puts the result in build/development.js which the index.html file loads.  
 
 The gitServer has to be running at http://localhost/delegatortest, and the index.html
 also has to be served from http://localhost/delegatortest.
@@ -217,3 +223,6 @@ and then symlink the test directory from this project into the apache home direc
 
 `sudo ln -s /Users/jc/cwrc/github/CWRC-GitDelegator delegatortest`
 
+### Test
+
+browserify test/in-browser.js | browser-run -p 2222 --static . --mock mock.js

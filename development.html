@@ -2,11 +2,8 @@
 <head>
 	<link rel="stylesheet" href="./node_modules/bootstrap/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="./node_modules/bootstrap/dist/css/bootstrap-theme.min.css">
-   
 </head>
 <body>
-
-
 <!-- Latest compiled and minified JavaScript -->
 
 	<!-- for this to work, the gitServer has to be running at http://localhost/delegatortest, and this file
@@ -17,7 +14,7 @@
 	ProxyPass /delegatortest/github http://localhost:3000/github
 	ProxyPassReverse /delegatortest/github http://localhost:3000/github
 
-	and then also symlink the test directory from this project into the apache home directory:
+	and then also symlink this project into the apache home directory:
 
 	sudo ln -s /Users/jc/Dropbox/cwrc/github/CWRC-GitDelegator delegatortest
 --> 
@@ -26,7 +23,7 @@
 	 <button id="save-pop" type="button" class="btn btn-default">Open File Save Popup</button>
     </div>
 
-	<script type="text/javascript" src ="./build/test.js"></script>
+	<script type="text/javascript" src ="./build/development.js"></script>
 	
 </body>
 </html>
